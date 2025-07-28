@@ -6,15 +6,12 @@ $(function () {
   const ctx = canvas.getContext("2d");
   const container = $("#container");
 
-  const mouse = {
-    x: 0,
-    y: 0,
-  };
+  const mouse = { x: 0, y: 0 };
   // Undo / Redo Functionality
   let history = [];
   let step = -1;
+  let hasDrawn = false;
 
-  // Undo / Redo Functionality
   function saveState() {
     step++;
     if (step < history.length) history.length = step;
@@ -24,9 +21,12 @@ $(function () {
   function undo() {
     if (step > 0) {
       step--;
-      let canvasPic = new Image();
-      canvasPic.src = history[step];
-      canvasPic.onload = () => ctx.drawImage(canvasPic, 0, 0);
+      const img = new Image();
+      img.src = history[step];
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
     }
   }
 
@@ -35,26 +35,30 @@ $(function () {
       step++;
       const img = new Image();
       img.src = history[step];
-      img.onload = () => ctx.drawImage(img, 0, 0);
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
     }
   }
 
-  // -----------------------------
-
+  // Load from localStorage then save initial state
   if (localStorage.getItem("imgCanvas") != null) {
-    var img = new Image();
-    img.onload = function () {
-      ctx.drawImage(img, 0, 0);
-    };
+    const img = new Image();
+    img.onload = function () { ctx.drawImage(img, 0, 0); saveState(); };
     img.src = localStorage.getItem("imgCanvas");
+  } else {
+    saveState(); // blank canvas state
   }
-  //set drawing parameters (lineWidth, lineJoin, lineCap)
+
+  // set drawing parameters
   ctx.lineWidth = 3;
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
 
   container.mousedown(function (e) {
     paint = true;
+    hasDrawn = false;
     ctx.beginPath();
     mouse.x = e.pageX - this.offsetLeft;
     mouse.y = e.pageY - this.offsetTop;
@@ -64,12 +68,9 @@ $(function () {
   container.mousemove(function (e) {
     mouse.x = e.pageX - this.offsetLeft;
     mouse.y = e.pageY - this.offsetTop;
-    if (paint == true) {
-      if (paint_erase == "paint") {
-        ctx.strokeStyle = $("#paintColor").val();
-      } else {
-        ctx.strokeStyle = "white";
-      }
+    if (paint) {
+      hasDrawn = true;
+      ctx.strokeStyle = paint_erase === "paint" ? $("#paintColor").val() : "white";
       ctx.lineTo(mouse.x, mouse.y);
       ctx.stroke();
     }
@@ -77,21 +78,21 @@ $(function () {
 
   container.mouseup(function () {
     paint = false;
-    saveState(); 
+    if (hasDrawn) saveState();
   });
 
   container.mouseleave(function () {
-    if (paint) {
+    if (paint && hasDrawn) {
       paint = false;
-      saveState(); 
+      saveState();
     }
   });
 
   $("#reset").click(function () {
-    //  First two are top-left points and second botton-right points
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     paint_erase = "paint";
     $("#erase").removeClass("eraseMode");
+    saveState();
   });
 
   $("#save").click(function () {
@@ -103,11 +104,7 @@ $(function () {
   });
 
   $("#erase").click(function () {
-    if (paint_erase == "paint") {
-      paint_erase = "erase";
-    } else {
-      paint_erase = "paint";
-    }
+    paint_erase = paint_erase === "paint" ? "erase" : "paint";
     $(this).toggleClass("eraseMode");
   });
 
@@ -122,10 +119,10 @@ $(function () {
       $("#circle").height(ui.value);
       $("#circle").width(ui.value);
       ctx.lineWidth = ui.value;
-    },
+    }
   });
 
-  // Undo / Redo Functionality
+  // Undo / Redo
   $("#undo").click(undo);
   $("#redo").click(redo);
 
