@@ -6,7 +6,10 @@ $(function () {
   const ctx = canvas.getContext("2d");
   const container = $("#container");
 
-  const mouse = { x: 0, y: 0 };
+  const mouse = {
+    x: 0,
+    y: 0
+  };
   // Undo / Redo Functionality
   let history = [];
   let step = -1;
@@ -45,7 +48,10 @@ $(function () {
   // Load from localStorage then save initial state
   if (localStorage.getItem("imgCanvas") != null) {
     const img = new Image();
-    img.onload = function () { ctx.drawImage(img, 0, 0); saveState(); };
+    img.onload = function () {
+      ctx.drawImage(img, 0, 0);
+      saveState();
+    };
     img.src = localStorage.getItem("imgCanvas");
   } else {
     saveState(); // blank canvas state
@@ -125,5 +131,17 @@ $(function () {
   // Undo / Redo
   $("#undo").click(undo);
   $("#redo").click(redo);
+  
+  //Load image background
+  $("#loadImage").change(function (e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const img = new Image();
+      img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
 
 });
