@@ -1,10 +1,45 @@
 $(function () {
   let paint = false;
   let paint_erase = "paint";
+
   const canvas = document.getElementById("paint");
   const ctx = canvas.getContext("2d");
   const container = $("#container");
-  const mouse = { x: 0, y: 0 };
+
+  const mouse = {
+    x: 0,
+    y: 0,
+  };
+  // Undo / Redo Functionality
+  let history = [];
+  let step = -1;
+
+  // Undo / Redo Functionality
+  function saveState() {
+    step++;
+    if (step < history.length) history.length = step;
+    history.push(canvas.toDataURL());
+  }
+
+  function undo() {
+    if (step > 0) {
+      step--;
+      let canvasPic = new Image();
+      canvasPic.src = history[step];
+      canvasPic.onload = () => ctx.drawImage(canvasPic, 0, 0);
+    }
+  }
+
+  function redo() {
+    if (step < history.length - 1) {
+      step++;
+      const img = new Image();
+      img.src = history[step];
+      img.onload = () => ctx.drawImage(img, 0, 0);
+    }
+  }
+
+  // -----------------------------
 
   if (localStorage.getItem("imgCanvas") != null) {
     var img = new Image();
@@ -85,4 +120,9 @@ $(function () {
       ctx.lineWidth = ui.value;
     },
   });
+  
+  // Undo / Redo Functionality
+  $("#undo").click(undo);
+  $("#redo").click(redo);
+
 });
