@@ -77,10 +77,14 @@ $(function () {
 
   container.mouseup(function () {
     paint = false;
+    saveState(); 
   });
 
   container.mouseleave(function () {
-    paint = false;
+    if (paint) {
+      paint = false;
+      saveState(); 
+    }
   });
 
   $("#reset").click(function () {
@@ -120,7 +124,7 @@ $(function () {
       ctx.lineWidth = ui.value;
     },
   });
-  
+
   // Undo / Redo Functionality
   $("#undo").click(undo);
   $("#redo").click(redo);

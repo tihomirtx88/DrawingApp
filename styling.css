@@ -66,16 +66,20 @@ body {
 }
 
 .inputContainer2 {
-  width: 399px;
-  margin: 0 auto;
+  width: 500px;
+  margin: 10px auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-/*erase.save and reset buttons*/
 .input2 {
-  width: 133px;
+  flex: 1;
+  min-width: 90px;
   color: #5bb4e7;
   font-size: 1.3em;
-  float: left;
+  text-align: center;
 }
 
 .button {
