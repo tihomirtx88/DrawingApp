@@ -1,6 +1,6 @@
 $(function () {
-  const paint = false;
-  const paint_erase = "paint";
+  let paint = false;
+  let paint_erase = "paint";
   const canvas = document.getElementById("paint");
   const ctx = canvas.getContext("2d");
   const container = $("#container");
