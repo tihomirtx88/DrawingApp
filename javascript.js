@@ -75,13 +75,17 @@ $(function () {
     }
   });
 
-  container.mouseup(function () {
-    paint = false;
-  });
+container.mouseup(function () {
+  paint = false;
+  saveState(); 
+});
 
-  container.mouseleave(function () {
+container.mouseleave(function () {
+  if (paint) {
     paint = false;
-  });
+    saveState(); 
+  }
+});
 
   $("#reset").click(function () {
     //  First two are top-left points and second botton-right points
