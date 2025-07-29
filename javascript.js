@@ -15,6 +15,8 @@ $(function () {
   let step = -1;
   let hasDrawn = false;
 
+  let historyColors = [];
+
   function saveState() {
     step++;
     if (step < history.length) history.length = step;
@@ -114,6 +116,35 @@ $(function () {
     $(this).toggleClass("eraseMode");
   });
 
+  // Paint colro history
+  $("#paintColor").change(function () {
+    const color = $(this).val();
+    $("#circle").css("background-color", color);
+
+    if (!historyColors.includes(color)) {
+
+      historyColors.unshift(color);
+      if (historyColors.length > 5) historyColors.pop();
+
+      $("#colorHistory").html("");
+      historyColors.forEach(c => {
+        const swatch = $("<div>").css({
+          width: "20px",
+          height: "20px",
+          background: c,
+          display: "inline-block",
+          margin: "2px",
+          border: "1px solid black",
+          cursor: "pointer"
+        });
+        swatch.click(() => {
+          $("#paintColor").val(c).trigger("change");
+        });
+        $("#colorHistory").append(swatch);
+      });
+    }
+  });
+
   $("#paintColor").change(function () {
     $("#circle").css("background-color", $(this).val());
   });
@@ -131,7 +162,7 @@ $(function () {
   // Undo / Redo
   $("#undo").click(undo);
   $("#redo").click(redo);
-  
+
   //Load image background
   $("#loadImage").change(function (e) {
     const file = e.target.files[0];
