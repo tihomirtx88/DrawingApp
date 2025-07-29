@@ -185,6 +185,13 @@ $(function () {
 
 });
 
+// Mini-preview Thumbnail
+setInterval(() => {
+  const preview = document.getElementById("preview").getContext("2d");
+  preview.clearRect(0, 0, 100, 80);
+  preview.drawImage(canvas, 0, 0, 100, 80);
+}, 500);
+
 // Touch support
 canvas.addEventListener("touchstart", function (e) {
   paint = true;
