@@ -162,6 +162,14 @@ $(function () {
   // Undo / Redo
   $("#undo").click(undo);
   $("#redo").click(redo);
+  
+  //export as png 
+  $("#download").click(function () {
+    const link = document.createElement("a");
+    link.download = "drawing.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  });
 
   //Load image background
   $("#loadImage").change(function (e) {
