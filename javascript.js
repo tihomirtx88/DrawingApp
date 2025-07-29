@@ -162,7 +162,7 @@ $(function () {
   // Undo / Redo
   $("#undo").click(undo);
   $("#redo").click(redo);
-  
+
   //export as png 
   $("#download").click(function () {
     const link = document.createElement("a");
@@ -184,3 +184,26 @@ $(function () {
   });
 
 });
+
+// Touch support
+canvas.addEventListener("touchstart", function (e) {
+  paint = true;
+  const touch = e.touches[0];
+  mouse.x = touch.clientX - canvas.offsetLeft;
+  mouse.y = touch.clientY - canvas.offsetTop;
+  ctx.beginPath();
+  ctx.moveTo(mouse.x, mouse.y);
+});
+
+canvas.addEventListener("touchmove", function (e) {
+  if (paint) {
+    const touch = e.touches[0];
+    mouse.x = touch.clientX - canvas.offsetLeft;
+    mouse.y = touch.clientY - canvas.offsetTop;
+    ctx.lineTo(mouse.x, mouse.y);
+    ctx.stroke();
+  }
+  e.preventDefault();
+});
+
+canvas.addEventListener("touchend", () => paint = false);
